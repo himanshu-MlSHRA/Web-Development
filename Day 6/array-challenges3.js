@@ -5,6 +5,7 @@ let teaTypes = ["herbal tea", "white tea", "masala tea"];
 teaTypes[1] = "jasmin tea";
 console.log(teaTypes); 
 
+
 // My mistake: used let to chnange the second element of the array , which should not be used for reassignment.
 // My mistake: used let to chnange the second element of the array instead of const, which should not be used for reassignment.
 //let teaTypes[1] = "jasmin tea"; also used 
