@@ -1,8 +1,11 @@
-let i = 1;
-let count = 5;
+// Write a while loop to count from 5 to 1 and store it in an array named 'countdown'.
+
+let i = 5;
 let countdown = [];
-while (count >= i) {
+
+while (i > 0) {
     countdown.push(i);
-    i++;
+    i--;
 }
+
 console.log(countdown);
