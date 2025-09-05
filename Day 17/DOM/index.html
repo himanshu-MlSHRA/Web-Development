@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ResumeAI | AI-Powered Resume Builder</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+  <!-- Floating Background Elements -->
+  <div class="floating-elements">
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+    <div class="floating-element"></div>
+  </div>
+
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <span>ResumeAI</span>
+        </div>
+        <div class="nav-links">
+          <a href="#how-it-works">How It Works</a>
+          <a href="#features">Features</a>
+          <a href="#benefits">Benefits</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-content">
+        <h1>AI-Powered Resume Builder for the Modern Job Seeker</h1>
+        <p>Upload your qualifications and let our AI create a professional resume while suggesting relevant job opportunities across platforms.</p>
+        <button class="cta-button" onclick="openResumeBuilder()">
+          <i class="fas fa-rocket"></i> Build Your Resume
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resume Builder Modal -->
+  <div id="resumeModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-user-edit"></i> Create Your Professional Resume</h2>
+        <span class="close" onclick="closeResumeBuilder()">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="progress">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+        
+        <form id="resumeForm">
+          <!-- Personal Information -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-user"></i> Personal Information
+            </h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="fullName">Full Name *</label>
+                <input type="text" id="fullName" name="fullName" required>
+              </div>
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone">
+              </div>
+              <div class="form-group">
+                <label for="location">Location</label>
+                <input type="text" id="location" name="location" placeholder="City, State">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="linkedin">LinkedIn Profile</label>
+                <input type="url" id="linkedin" name="linkedin" placeholder="https://linkedin.com/in/yourprofile">
+              </div>
+              <div class="form-group">
+                <label for="portfolio">Portfolio/Website</label>
+                <input type="url" id="portfolio" name="portfolio" placeholder="https://yourwebsite.com">
+              </div>
+            </div>
+          </div>
+
+          <!-- Job Target -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-bullseye"></i> Job Target
+            </h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="jobTitle">Desired Job Title *</label>
+                <input type="text" id="jobTitle" name="jobTitle" required placeholder="e.g., Software Engineer">
+                <div class="suggestions" id="jobTitleSuggestions"></div>
+              </div>
+              <div class="form-group">
+                <label for="industry">Industry</label>
+                <select id="industry" name="industry">
+                  <option value="">Select Industry</option>
+                  <option value="technology">Technology</option>
+                  <option value="healthcare">Healthcare</option>
+                  <option value="finance">Finance</option>
+                  <option value="education">Education</option>
+                  <option value="marketing">Marketing</option>
+                  <option value="sales">Sales</option>
+                  <option value="design">Design</option>
+                  <option value="engineering">Engineering</option>
+                  <option value="consulting">Consulting</option>
+                  <option value="other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="summary">Professional Summary</label>
+              <textarea id="summary" name="summary" rows="4" placeholder="Brief summary of your experience and career goals..."></textarea>
+            </div>
+          </div>
+
+          <!-- Skills -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-cogs"></i> Skills & Technologies
+            </h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="technicalSkills">Technical Skills</label>
+                <input type="text" id="technicalSkills" name="technicalSkills" placeholder="e.g., JavaScript, Python, SQL">
+                <div class="suggestions" id="technicalSkillsSuggestions"></div>
+              </div>
+              <div class="form-group">
+                <label for="softSkills">Soft Skills</label>
+                <input type="text" id="softSkills" name="softSkills" placeholder="e.g., Leadership, Communication">
+                <div class="suggestions" id="softSkillsSuggestions"></div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="languages">Languages</label>
+                <input type="text" id="languages" name="languages" placeholder="e.g., English (Native), Spanish (Fluent)">
+              </div>
+              <div class="form-group">
+                <label for="certifications">Certifications</label>
+                <input type="text" id="certifications" name="certifications" placeholder="e.g., AWS Certified, PMP">
+                <div class="suggestions" id="certificationsSuggestions"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Work Experience -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-briefcase"></i> Work Experience
+            </h3>
+            <div id="experienceContainer">
+              <div class="experience-item">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="month" name="expStartDate[]">
+                  </div>
+                  <div class="form-group">
+                    <label>End Date</label>
+                    <input type="month" name="expEndDate[]" placeholder="Leave blank if current">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Job Description & Achievements</label>
+                  <textarea name="expDescription[]" rows="4" placeholder="Describe your role, responsibilities, and key achievements..."></textarea>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-more" onclick="addExperience()">
+              <i class="fas fa-plus"></i> Add Another Experience
+            </button>
+          </div>
+
+          <!-- Education -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-graduation-cap"></i> Education
+            </h3>
+            <div id="educationContainer">
+              <div class="education-item">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Degree/Qualification *</label>
+                    <input type="text" name="eduDegree[]" required placeholder="e.g., Bachelor of Science">
+                  </div>
+                  <div class="form-group">
+                    <label>Field of Study</label>
+                    <input type="text" name="eduField[]" placeholder="e.g., Computer Science">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Institution Name *</label>
+                    <input type="text" name="eduInstitution[]" required placeholder="e.g., University of Technology">
+                  </div>
+                  <div class="form-group">
+                    <label>Graduation Year</label>
+                    <input type="number" name="eduYear[]" min="1950" max="2030" placeholder="2023">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>GPA (Optional)</label>
+                    <input type="text" name="eduGPA[]" placeholder="3.8/4.0">
+                  </div>
+                  <div class="form-group">
+                    <label>Honors/Awards</label>
+                    <input type="text" name="eduHonors[]" placeholder="e.g., Magna Cum Laude, Dean's List">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-more" onclick="addEducation()">
+              <i class="fas fa-plus"></i> Add Another Education
+            </button>
+          </div>
+
+          <!-- Projects -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-project-diagram"></i> Projects & Achievements
+            </h3>
+            <div id="projectsContainer">
+              <div class="project-item">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Project Name</label>
+                    <input type="text" name="projectName[]" placeholder="e.g., E-commerce Website">
+                  </div>
+                  <div class="form-group">
+                    <label>Technologies Used</label>
+                    <input type="text" name="projectTech[]" placeholder="e.g., React, Node.js, MongoDB">
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Project Description</label>
+                  <textarea name="projectDescription[]" rows="3" placeholder="Describe the project, your role, and impact..."></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Project URL (Optional)</label>
+                    <input type="url" name="projectURL[]" placeholder="https://github.com/username/project">
+                  </div>
+                  <div class="form-group">
+                    <label>Completion Date</label>
+                    <input type="month" name="projectDate[]">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <button type="button" class="add-more" onclick="addProject()">
+              <i class="fas fa-plus"></i> Add Another Project
+            </button>
+          </div>
+
+          <!-- Additional Information -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-plus-circle"></i> Additional Information
+            </h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="hobbies">Hobbies & Interests</label>
+                <input type="text" id="hobbies" name="hobbies" placeholder="e.g., Photography, Hiking, Open Source Contributing">
+              </div>
+              <div class="form-group">
+                <label for="volunteer">Volunteer Experience</label>
+                <input type="text" id="volunteer" name="volunteer" placeholder="e.g., Local Food Bank, Coding Bootcamp Mentor">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="awards">Awards & Recognition</label>
+              <textarea id="awards" name="awards" rows="3" placeholder="List any awards, honors, or recognition you've received..."></textarea>
+            </div>
+          </div>
+
+          <!-- Upload Existing Resume -->
+          <div class="form-section">
+            <h3 class="section-title">
+              <i class="fas fa-upload"></i> Upload Existing Resume (Optional)
+            </h3>
+            <div class="file-upload" onclick="document.getElementById('resumeFile').click()">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <h4>Drag & Drop or Click to Upload</h4>
+              <p>Upload your current resume (PDF, DOC, DOCX) to help our AI understand your background better</p>
+              <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.doc,.docx" style="display: none;">
+            </div>
+            <div id="uploadedFileName" style="margin-top: 10px; color: var(--success); display: none;">
+              <i class="fas fa-check-circle"></i> <span></span>
+            </div>
+          </div>
+
+          <!-- Loading and Success States -->
+          <div class="loading" id="loadingState">
+            <div class="spinner"></div>
+            <h3>AI is crafting your perfect resume...</h3>
+            <p>This may take a few moments while we analyze your information and create a professional resume.</p>
+          </div>
+
+          <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <h3>Resume Created Successfully!</h3>
+            <p>Your AI-powered resume is ready. Check your email for the download link and job recommendations.</p>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">
+            <i class="fas fa-magic"></i> Generate My Resume
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- How It Works Section -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <h2 class="section-title-main">How It Works</h2>
+      <p class="section-subtitle">Our AI-powered resume builder transforms your qualifications into a professional resume in three simple steps</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+          <h3>Upload Qualifications</h3>
+          <p>Provide your work experience, education, skills, and certifications through our intuitive interface.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon"><i class="fas fa-brain"></i></div>
+          <h3>AI Analysis & Creation</h3>
+          <p>Our advanced AI processes your information and creates a professional, ATS-friendly resume.</p>
+        </div>
+        <div class="step">
+          <div class="step-icon"><i class="fas fa-file-download"></i></div>
+          <h3>Download & Apply</h3>
+          <p>Download your resume and get personalized job recommendations across platforms.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Suggestion databases
+    const jobTitleSuggestions = [
+      'Software Engineer', 'Frontend Developer', 'Backend Developer', 'Full Stack Developer',
+      'Data Scientist', 'Data Analyst', 'Product Manager', 'UX Designer', 'UI Designer',
+      'DevOps Engineer', 'Marketing Manager', 'Sales Representative', 'Business Analyst',
+      'Project Manager', 'Quality Assurance Engineer', 'Mobile Developer', 'Cloud Architect'
+    ];
+
+    const technicalSkillsSuggestions = [
+      'JavaScript', 'Python', 'Java', 'C++', 'React', 'Angular', 'Vue.js', 'Node.js',
+      'SQL', 'MySQL', 'PostgreSQL', 'MongoDB', 'AWS', 'Azure', 'Docker', 'Kubernetes',
+      'Git', 'GitHub', 'HTML', 'CSS', 'TypeScript', 'PHP', 'Ruby', 'Go', 'Rust'
+    ];
+
+    const softSkillsSuggestions = [
+      'Leadership', 'Communication', 'Teamwork', 'Problem Solving', 'Critical Thinking',
+      'Time Management', 'Adaptability', 'Creativity', 'Attention to Detail',
+      'Project Management', 'Public Speaking', 'Negotiation', 'Customer Service'
+    ];
+
+    const certificationsSuggestions = [
+      'AWS Certified Solutions Architect', 'Google Cloud Professional', 'Microsoft Azure Fundamentals',
+      'PMP (Project Management Professional)', 'Scrum Master Certification', 'Google Analytics Certified',
+      'HubSpot Inbound Marketing', 'Salesforce Administrator', 'Adobe Certified Expert',
+      'CompTIA Security+', 'Cisco CCNA', 'Oracle Certified Professional'
+    ];
+
+    // Modal functions
+    function openResumeBuilder() {
+      document.getElementById('resumeModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+      updateProgress();
+    }
+
+    function closeResumeBuilder() {
+      document.getElementById('resumeModal').style.display = 'none';
+      document.body.style.overflow = 'auto';
+    }
+
+    // Progress tracking
+    function updateProgress() {
+      const form = document.getElementById('resumeForm');
+      const inputs = form.querySelectorAll('input[required], textarea[required]');
+      let filledInputs = 0;
+      
+      inputs.forEach(input => {
+        if (input.value.trim() !== '') {
+          filledInputs++;
+        }
+      });
+      
+      const progress = Math.min((filledInputs / inputs.length) * 100, 100);
+      document.getElementById('progressBar').style.width = progress + '%';
+    }
+
+    // Auto-suggestion functionality
+    function setupSuggestions(inputId, suggestions) {
+      const input = document.getElementById(inputId);
+      const suggestionsDiv = document.getElementById(inputId + 'Suggestions');
+      
+      input.addEventListener('input', function() {
+        const value = this.value.toLowerCase();
+        suggestionsDiv.innerHTML = '';
+        
+        if (value.length < 2) {
+          suggestionsDiv.style.display = 'none';
+          return;
+        }
+        
+        const matches = suggestions.filter(item => 
+          item.toLowerCase().includes(value)
+        ).slice(0, 5);
+        
+        if (matches.length > 0) {
+          matches.forEach(match => {
+            const div = document.createElement('div');
+            div.className = 'suggestion-item';
+            div.textContent = match;
+            div.addEventListener('click', function() {
+              input.value = match;
+              suggestionsDiv.style.display = 'none';
+              updateProgress();
+            });
+            suggestionsDiv.appendChild(div);
+          });
+          suggestionsDiv.style.display = 'block';
+        } else {
+          suggestionsDiv.style.display = 'none';
+        }
+      });
+      
+      // Hide suggestions when clicking outside
+      document.addEventListener('click', function(e) {
+        if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+          suggestionsDiv.style.display = 'none';
+        }
+      });
+    }
+
+    // Initialize suggestions
+    setupSuggestions('jobTitle', jobTitleSuggestions);
+    setupSuggestions('technicalSkills', technicalSkillsSuggestions);
+    setupSuggestions('softSkills', softSkillsSuggestions);
+    setupSuggestions('certifications', certificationsSuggestions);
+
+    // Dynamic form additions
+    function addExperience() {
+      const container = document.getElementById('experienceContainer');
+      const newExp = document.createElement('div');
+      newExp.className = 'experience-item';
+      newExp.style.marginTop = '30px';
+      newExp.style.paddingTop = '30px';
+      newExp.style.borderTop = '2px solid var(--border)';
+      newExp.innerHTML = `
+        <div class="form-row">
+          <div class="form-group">
+            <label>Job Title *</label>
+            <input type="text" name="expJobTitle[]" required placeholder="e.g., Software Developer">
+          </div>
+          <div class="form-group">
+            <label>Company Name *</label>
+            <input type="text" name="expCompany[]" required placeholder="e.g., Tech Corp">
+            <button type="button" class="remove-item" onclick="removeItem(this)">Remove</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Start Date</label>
+            <input type="month" name="expStartDate[]">
+          </div>
+          <div class="form-group">
+            <label>End Date</label>
+            <input type="month" name="expEndDate[]" placeholder="Leave blank if current">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Job Description & Achievements</label>
+          <textarea name="expDescription[]" rows="4" placeholder="Describe your role, responsibilities, and key achievements..."></textarea>
+        </div>
+      `;
+      container.appendChild(newExp);
+      animateNewItem(newExp);
+    }
+
+    function addEducation() {
+      const container = document.getElementById('educationContainer');
+      const newEdu = document.createElement('div');
+      newEdu.className = 'education-item';
+      newEdu.style.marginTop = '30px';
+      newEdu.style.paddingTop = '30px';
+      newEdu.style.borderTop = '2px solid var(--border)';
+      newEdu.innerHTML = `
+        <div class="form-row">
+          <div class="form-group">
+            <label>Degree/Qualification *</label>
+            <input type="text" name="eduDegree[]" required placeholder="e.g., Bachelor of Science">
+          </div>
+          <div class="form-group">
+            <label>Field of Study</label>
+            <input type="text" name="eduField[]" placeholder="e.g., Computer Science">
+            <button type="button" class="remove-item" onclick="removeItem(this)">Remove</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Institution Name *</label>
+            <input type="text" name="eduInstitution[]" required placeholder="e.g., University of Technology">
+          </div>
+          <div class="form-group">
+            <label>Graduation Year</label>
+            <input type="number" name="eduYear[]" min="1950" max="2030" placeholder="2023">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>GPA (Optional)</label>
+            <input type="text" name="eduGPA[]" placeholder="3.8/4.0">
+          </div>
+          <div class="form-group">
+            <label>Honors/Awards</label>
+            <input type="text" name="eduHonors[]" placeholder="e.g., Magna Cum Laude, Dean's List">
+          </div>
+        </div>
+      `;
+      container.appendChild(newEdu);
+      animateNewItem(newEdu);
+    }
+
+    function addProject() {
+      const container = document.getElementById('projectsContainer');
+      const newProject = document.createElement('div');
+      newProject.className = 'project-item';
+      newProject.style.marginTop = '30px';
+      newProject.style.paddingTop = '30px';
+      newProject.style.borderTop = '2px solid var(--border)';
+      newProject.innerHTML = `
+        <div class="form-row">
+          <div class="form-group">
+            <label>Project Name</label>
+            <input type="text" name="projectName[]" placeholder="e.g., E-commerce Website">
+          </div>
+          <div class="form-group">
+            <label>Technologies Used</label>
+            <input type="text" name="projectTech[]" placeholder="e.g., React, Node.js, MongoDB">
+            <button type="button" class="remove-item" onclick="removeItem(this)">Remove</button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Project Description</label>
+          <textarea name="projectDescription[]" rows="3" placeholder="Describe the project, your role, and impact..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Project URL (Optional)</label>
+            <input type="url" name="projectURL[]" placeholder="https://github.com/username/project">
+          </div>
+          <div class="form-group">
+            <label>Completion Date</label>
+            <input type="month" name="projectDate[]">
+          </div>
+        </div>
+      `;
+      container.appendChild(newProject);
+      animateNewItem(newProject);
+    }
+
+    function removeItem(button) {
+      const item = button.closest('.experience-item, .education-item, .project-item');
+      item.style.opacity = '0';
+      item.style.transform = 'translateX(-100%)';
+      setTimeout(() => {
+        item.remove();
+        updateProgress();
+      }, 300);
+    }
+
+    function animateNewItem(element) {
+      element.style.opacity = '0';
+      element.style.transform = 'translateY(20px)';
+      setTimeout(() => {
+        element.style.transition = 'all 0.4s ease';
+        element.style.opacity = '1';
+        element.style.transform = 'translateY(0)';
+      }, 100);
+    }
+
+    // File upload handling
+    const fileUpload = document.querySelector('.file-upload');
+    const fileInput = document.getElementById('resumeFile');
+    const uploadedFileName = document.getElementById('uploadedFileName');
+
+    fileInput.addEventListener('change', function(e) {
+      if (e.target.files.length > 0) {
+        const fileName = e.target.files[0].name;
+        uploadedFileName.querySelector('span').textContent = fileName;
+        uploadedFileName.style.display = 'block';
+        fileUpload.style.borderColor = 'var(--success)';
+        fileUpload.style.background = 'rgba(72, 187, 120, 0.1)';
+      }
+    });
+
+    // Drag and drop functionality
+    fileUpload.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      this.classList.add('dragover');
+    });
+
+    fileUpload.addEventListener('dragleave', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+    });
+
+    fileUpload.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        fileInput.files = files;
+        const fileName = files[0].name;
+        uploadedFileName.querySelector('span').textContent = fileName;
+        uploadedFileName.style.display = 'block';
+        this.style.borderColor = 'var(--success)';
+        this.style.background = 'rgba(72, 187, 120, 0.1)';
+      }
+    });
+
+    // Form submission
+    document.getElementById('resumeForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      // Hide form and show loading
+      const formSections = document.querySelectorAll('.form-section');
+      const submitBtn = document.getElementById('submitBtn');
+      const loadingState = document.getElementById('loadingState');
+      
+      formSections.forEach(section => {
+        section.style.display = 'none';
+      });
+      submitBtn.style.display = 'none';
+      loadingState.style.display = 'block';
+      
+      // Simulate AI processing
+      setTimeout(() => {
+        loadingState.style.display = 'none';
+        document.getElementById('successMessage').style.display = 'block';
+        
+        // Auto close after 3 seconds
+        setTimeout(() => {
+          closeResumeBuilder();
+          // Reset form
+          this.reset();
+          formSections.forEach(section => {
+            section.style.display = 'block';
+          });
+          submitBtn.style.display = 'block';
+          document.getElementById('successMessage').style.display = 'none';
+          uploadedFileName.style.display = 'none';
+          fileUpload.style.borderColor = 'var(--border)';
+          fileUpload.style.background = '';
+        }, 3000);
+      }, 4000);
+    });
+
+    // Update progress on input changes
+    document.addEventListener('input', updateProgress);
+    document.addEventListener('change', updateProgress);
+
+    // Smooth scrolling for navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          window.scrollTo({
+            top: target.offsetTop - 80,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Close modal when clicking outside
+    window.addEventListener('click', function(e) {
+      const modal = document.getElementById('resumeModal');
+      if (e.target === modal) {
+        closeResumeBuilder();
+      }
+    });
+
+    // Intersection Observer for animations
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    // Observe elements for scroll animations
+    document.addEventListener('DOMContentLoaded', function() {
+      const animateElements = document.querySelectorAll('.step, .section-title-main, .section-subtitle');
+      animateElements.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+        observer.observe(el);
+      });
+    });
+  </script>
+</body>
+</html>
+                    <label>Job Title *</label>
+                    <input type="text" name="expJobTitle[]" required placeholder="e.g., Software Developer">
+                  </div>
+                  <div class="form-group">
+                    <label>Company Name *</label>
+                    <input type="text" name="expCompany[]" required placeholder="e.g., Tech Corp">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
