@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Playground — Interactive Single File Demo</title>
+  <meta name="description" content="A compact single-file demo with styles and JS. Good for testing a static Node server." />
+
+  <style>
+    /* -----------------------
+       Base / Reset (tiny)
+       -----------------------*/
+    :root{
+      --bg:#0f1724; /* deep slate */
+      --card:#111827;
+      --muted:#9ca3af;
+      --accent:#10b981; /* green */
+      --glass: rgba(255,255,255,0.04);
+      --glass-2: rgba(255,255,255,0.02);
+      --max-w:1100px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace;
+      color-scheme: dark;
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+      background: linear-gradient(180deg,var(--bg) 0%, #071027 60%);
+      color: #e6eef8;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      padding:32px 16px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+    }
+
+    .wrap{
+      width:100%;
+      max-width:var(--max-w);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+      border-radius:16px;
+      padding:28px;
+      box-shadow: 0 20px 50px rgba(3,7,18,0.7);
+      border: 1px solid rgba(255,255,255,0.03);
+    }
+
+    header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+    }
+
+    .logo{
+      width:52px;height:52px;border-radius:10px;
+      display:grid;place-items:center;font-weight:700;font-family:var(--mono);
+      background:linear-gradient(135deg,#06202b,#0b3a2a);
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    h1{font-size:20px;margin:0}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    nav{display:flex;gap:10px;align-items:center}
+    nav button{background:transparent;border:1px solid rgba(255,255,255,0.03);padding:8px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
+    nav button:hover{color:var(--accent);transform:translateY(-2px)}
+
+    main{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:18px;
+      margin-top:22px;
+    }
+
+    /* left column */
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+      padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .hero{
+      padding:16px;border-radius:10px;background:linear-gradient(180deg, rgba(16,185,129,0.06), transparent);
+      border:1px solid rgba(16,185,129,0.07);
+    }
+
+    .controls{display:flex;gap:8px;margin-top:12px}
+    .btn{background:var(--accent);color:#02120b;border:0;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}
+    .btn.secondary{background:transparent;color:var(--muted);border:1px solid rgba(255,255,255,0.04)}
+
+    /* gallery */
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+    .card{background:var(--card);padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)}
+    .card h3{margin:0 0 6px 0;font-size:15px}
+    .card p{margin:0;color:var(--muted);font-size:13px}
+
+    /* sidebar */
+    aside{position:sticky;top:28px}
+    .stat{display:flex;gap:10px;align-items:center;margin-bottom:10px}
+    .stat .num{font-weight:700;font-size:18px}
+
+    /* modal */
+    .modal-backdrop{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(2,6,23,0.6)}
+    .modal{width:min(780px,96%);background:linear-gradient(180deg,#071226,#08192a);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.04)}
+
+    form{display:flex;flex-direction:column;gap:8px}
+    input,textarea,select{padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    label{font-size:12px;color:var(--muted)}
+
+    footer{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+
+    /* tiny helpers */
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:10px;align-items:center}
+    .pill{padding:6px 8px;border-radius:999px;font-size:12px;border:1px solid rgba(255,255,255,0.03)}
+
+    /* responsive */
+    @media (max-width:900px){
+      main{grid-template-columns:1fr}
+      aside{position:static}
+    }
+
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo">PG</div>
+        <div>
+          <h1>Playground — single-file demo</h1>
+          <p class="lead">Static-friendly page with small interactive bits — use for testing servers.</p>
+        </div>
+      </div>
+
+      <nav>
+        <button id="openDemo">Open demo modal</button>
+        <button id="toggleTheme" class="secondary">Toggle vibe</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="panel">
+        <div class="hero">
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <div>
+              <h2 style="margin:0 0 6px 0">Interactive playground</h2>
+              <div class="muted">Small utilities packed in one file — gallery, form, and local interactions.</div>
+            </div>
+            <div class="pill">v1.0</div>
+          </div>
+
+          <div class="controls">
+            <button class="btn" id="randomize">Randomize cards</button>
+            <button class="btn secondary" id="resetLikes">Reset likes</button>
+            <button class="btn secondary" id="downloadJson">Export JSON</button>
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <h3 style="margin:0 0 8px 0">Gallery</h3>
+          <div class="grid" id="gallery">
+            <!-- cards injected by JS -->
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <h3 style="margin:0 0 8px 0">Live Console</h3>
+          <div id="console" class="card" style="min-height:64px;max-height:160px;overflow:auto;font-family:var(--mono);font-size:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);">Ready.</div>
+        </div>
+
+        <footer>
+          Tip: drag-select text to copy. This file is purposely verbose so your server can test larger payloads.
+        </footer>
+      </section>
+
+      <aside>
+        <div class="panel">
+          <div class="stat"><div class="num" id="likeCount">0</div><div class="muted">Total likes</div></div>
+          <div class="stat"><div class="num" id="cardCount">0</div><div class="muted">Cards shown</div></div>
+
+          <hr style="border:none;height:1px;background:rgba(255,255,255,0.03);margin:12px 0">
+
+          <h4 style="margin:0 0 8px 0">Quick contact</h4>
+          <form id="contactForm">
+            <label for="name">Your name</label>
+            <input id="name" required placeholder="Type your name...">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="you@example.com">
+            <label for="message">Message</label>
+            <textarea id="message" rows="4" placeholder="Quick note..."></textarea>
+            <div style="display:flex;gap:8px;margin-top:8px">
+              <button class="btn" type="submit">Send</button>
+              <button class="btn secondary" type="button" id="fillSample">Fill sample</button>
+            </div>
+          </form>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="panel">
+          <h4 style="margin:0 0 8px 0">Tools</h4>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn secondary" id="showTime">Show time</button>
+            <button class="btn secondary" id="clearConsole">Clear console</button>
+            <button class="btn secondary" id="openTab">Open new tab</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <!-- modal -->
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h3 style="margin:0">Demo modal</h3>
+          <div class="row">
+            <button class="btn secondary" id="copyState">Copy state</button>
+            <button class="btn" id="closeModal">Close</button>
+          </div>
+        </div>
+        <p class="muted">This modal shows the app state and a small interactive demo (typing effect + small chart built with canvas).</p>
+
+        <div style="margin-top:12px;display:flex;gap:12px;align-items:flex-start">
+          <div style="flex:1">
+            <h4 style="margin:0 0 6px 0">App state</h4>
+            <pre id="appState" style="background:var(--glass);padding:10px;border-radius:8px;overflow:auto;max-height:260px;font-family:var(--mono);font-size:12px">{}</pre>
+          </div>
+
+          <div style="width:220px">
+            <h4 style="margin:0 0 6px 0">Tiny chart</h4>
+            <canvas id="miniChart" width="220" height="140" style="display:block;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);"></canvas>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // -------------------------------
+    // tiny demo JS — self-contained
+    // -------------------------------
+    (function(){
+      // sample data for cards
+      const sample = [
+        {id:1,title:'Nebula Compact',desc:'A tiny pixel-art inspired resource pack.',likes:0},
+        {id:2,title:'Orbit UI',desc:'A small set of components for dashboards.',likes:0},
+        {id:3,title:'Frost Icons',desc:'Minimal monochrome icon set.',likes:0},
+        {id:4,title:'Sound Kit',desc:'Short UI sounds and stings for projects.',likes:0},
+        {id:5,title:'Type Beats',desc:'Short loopable tracks for background.',likes:0},
+        {id:6,title:'Photon BGs',desc:'Gradient backgrounds with patterns.',likes:0}
+      ];
+
+      // cached DOM
+      const gallery = document.getElementById('gallery');
+      const likeCountEl = document.getElementById('likeCount');
+      const cardCountEl = document.getElementById('cardCount');
+      const consoleEl = document.getElementById('console');
+      const modalBackdrop = document.getElementById('modalBackdrop');
+      const openDemo = document.getElementById('openDemo');
+      const closeModal = document.getElementById('closeModal');
+      const appState = document.getElementById('appState');
+      const miniChart = document.getElementById('miniChart');
+      const randomize = document.getElementById('randomize');
+      const resetLikes = document.getElementById('resetLikes');
+      const downloadJson = document.getElementById('downloadJson');
+      const copyState = document.getElementById('copyState');
+      const showTime = document.getElementById('showTime');
+      const clearConsole = document.getElementById('clearConsole');
+      const openTab = document.getElementById('openTab');
+      const contactForm = document.getElementById('contactForm');
+      const fillSample = document.getElementById('fillSample');
+      const toggleTheme = document.getElementById('toggleTheme');
+
+      // app state
+      let state = {
+        cards: JSON.parse(localStorage.getItem('pg_cards')) || sample,
+        likes: JSON.parse(localStorage.getItem('pg_likes')) || {},
+      };
+
+      // render gallery
+      function renderGallery(){
+        gallery.innerHTML = '';
+        state.cards.forEach(card => {
+          const div = document.createElement('div');
+          div.className = 'card';
+          div.innerHTML = `
+            <h3>${escapeHtml(card.title)}</h3>
+            <p>${escapeHtml(card.desc)}</p>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">
+              <div class="muted">ID: ${card.id}</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <button data-id="${card.id}" class="btn small likeBtn">Like</button>
+                <span class="muted">${state.likes[card.id]||0}</span>
+              </div>
+            </div>`;
+          gallery.appendChild(div);
+        });
+
+        // update counters
+        const totalLikes = Object.values(state.likes).reduce((s,n)=>s+(n||0),0);
+        likeCountEl.textContent = totalLikes;
+        cardCountEl.textContent = state.cards.length;
+
+        // attach listeners for like buttons
+        Array.from(document.querySelectorAll('.likeBtn')).forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            const id = btn.getAttribute('data-id');
+            state.likes[id] = (state.likes[id]||0)+1;
+            persist();
+            log('Liked card '+id);
+            renderGallery();
+            drawMiniChart();
+          });
+        });
+      }
+
+      // helper: escape user text
+      function escapeHtml(str){
+        if(!str) return '';
+        return String(str).replace(/[&<>"'`]/g, function(s){
+          return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;","`":"&#96;"})[s];
+        });
+      }
+
+      // tiny logger
+      function log(msg){
+        const t = new Date().toLocaleTimeString();
+        consoleEl.textContent = `[${t}] ${msg}\n` + consoleEl.textContent;
+      }
+
+      // persist state
+      function persist(){
+        localStorage.setItem('pg_cards', JSON.stringify(state.cards));
+        localStorage.setItem('pg_likes', JSON.stringify(state.likes));
+        appState.textContent = JSON.stringify(state, null, 2);
+      }
+
+      // randomize cards
+      randomize.addEventListener('click', ()=>{
+        state.cards = shuffleArray(state.cards.slice());
+        persist(); renderGallery(); drawMiniChart(); log('Shuffled gallery');
+      });
+
+      resetLikes.addEventListener('click', ()=>{
+        state.likes = {};
+        persist(); renderGallery(); drawMiniChart(); log('Reset likes');
+      });
+
+      downloadJson.addEventListener('click', ()=>{
+        const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'playground-state.json';
+        document.body.appendChild(a); a.click(); a.remove();
+        URL.revokeObjectURL(url);
+        log('Exported JSON');
+      });
+
+      // modal controls
+      openDemo.addEventListener('click', ()=>{ modalBackdrop.style.display='flex'; drawMiniChart(); updateStateView(); });
+      closeModal.addEventListener('click', ()=>{ modalBackdrop.style.display='none'; });
+      modalBackdrop.addEventListener('click', (e)=>{ if(e.target===modalBackdrop) modalBackdrop.style.display='none'; });
+
+      copyState.addEventListener('click', ()=>{
+        navigator.clipboard.writeText(JSON.stringify(state, null, 2)).then(()=>{
+          log('State copied to clipboard');
+        }).catch(()=>log('Copy failed'));
+      });
+
+      // form
+      contactForm.addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const message = document.getElementById('message').value.trim();
+        if(!name) { log('Name required'); return }
+        if(email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { log('Bad email'); return }
+        log(`Contact: ${name} — ${message.slice(0,40)}${message.length>40?'...':''}`);
+        contactForm.reset();
+      });
+
+      fillSample.addEventListener('click', ()=>{
+        document.getElementById('name').value = 'Anshu Sample';
+        document.getElementById('email').value = 'anshu@example.com';
+        document.getElementById('message').value = 'Hey — testing the single-file demo.';
+      });
+
+      showTime.addEventListener('click', ()=>{
+        alert(new Date().toLocaleString());
+      });
+
+      clearConsole.addEventListener('click', ()=>{ consoleEl.textContent=''; log('Console cleared'); });
+      openTab.addEventListener('click', ()=>{ window.open('about:blank','_blank'); log('Opened new tab'); });
+
+      // theme toggle — simple CSS inversion
+      toggleTheme.addEventListener('click', ()=>{
+        if(document.documentElement.style.filter){
+          document.documentElement.style.filter='';
+          toggleTheme.textContent='Toggle vibe';
+        } else {
+          document.documentElement.style.filter='invert(0.02)';
+          toggleTheme.textContent='Vibe: flipped';
+        }
+      });
+
+      // tiny canvas chart
+      function drawMiniChart(){
+        const ctx = miniChart.getContext('2d');
+        const data = state.cards.map(c => (state.likes[c.id]||0));
+        const w = miniChart.width, h = miniChart.height;
+        ctx.clearRect(0,0,w,h);
+        // background grid
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        for(let y=10;y<h;y+=20){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+        // draw bars
+        const max = Math.max(1, ...data);
+        const barW = Math.floor(w / Math.max(1,data.length)) - 6;
+        data.forEach((val,i)=>{
+          const x = i*(barW+8)+6;
+          const barH = Math.floor((val / max) * (h-20));
+          ctx.fillStyle = 'rgba(16,185,129,0.85)';
+          ctx.fillRect(x, h-10-barH, barW, barH);
+        });
+      }
+
+      // small utilities
+      function shuffleArray(arr){
+        for(let i=arr.length-1;i>0;i--){
+          const j = Math.floor(Math.random()*(i+1));
+          [arr[i],arr[j]] = [arr[j],arr[i]];
+        }
+        return arr;
+      }
+
+      function updateStateView(){ appState.textContent = JSON.stringify(state, null, 2); }
+
+      // mini typing intro
+      (function typing(){
+        const text = 'Welcome to the Playground — single-file demo.';
+        let i=0; const el=document.querySelector('.hero .muted');
+        el.textContent = '';
+        const t = setInterval(()=>{
+          el.textContent += text[i++]||'';
+          if(i>text.length){ clearInterval(t); }
+        },20);
+      })();
+
+      // escape guard for servers that peek content-type
+      // and for environments with no localStorage support (older browsers)
+      try{ window.localStorage && persist(); }catch(e){ log('localStorage not available'); }
+
+      // initial render
+      renderGallery(); drawMiniChart(); updateStateView();
+
+      // small keyboard shortcut: press L to like first card
+      window.addEventListener('keydown', (e)=>{
+        if(e.key.toLowerCase()==='l'){ if(state.cards[0]){ state.likes[state.cards[0].id] = (state.likes[state.cards[0].id]||0)+1; persist(); renderGallery(); drawMiniChart(); log('Liked first card (hotkey)'); } }
+      });
+
+      // safe fallback for pages served from static servers: if index file is not loaded properly, log a tiny message
+      if(!('querySelector' in document)){
+        console.error('DOM not available');
+      }
+
+    })();
+  </script>
+</body>
+</html>
